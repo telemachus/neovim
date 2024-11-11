@@ -376,6 +376,30 @@ do
       local linenr = vim.api.nvim_win_get_cursor(0)[1]
       vim.api.nvim_buf_set_lines(0, linenr, linenr, true, repeated)
     end, { desc = 'Add empty line below cursor' })
+
+    --- Put the contents of a register linewise using either |P| or |p|.
+    --- @param put_cmd string Which paste command to use (P or p)
+    local put_linewise = function(put_cmd)
+      local reg_type = vim.fn.getregtype(vim.v.register)
+      local body = vim.fn.getreg(vim.v.register)
+      -- By adding ] to the put command, we get automatic indentation.
+      -- See `help ]p` and `help ]P`.
+      put_cmd = ']' .. put_cmd
+
+      vim.fn.setreg(vim.v.register, body, 'l')
+      local cmd_string = 'normal! "' .. vim.v.register .. vim.v.count1 .. put_cmd
+      vim.cmd(cmd_string)
+      vim.fn.setreg(vim.v.register, body, reg_type)
+    end
+
+    -- Put yanked text linewise regardless of mode it was yanked in.
+    vim.keymap.set('n', '[p', function()
+      put_linewise('P')
+    end, { desc = 'Paste before linewise' })
+
+    vim.keymap.set('n', ']p', function()
+      put_linewise('p')
+    end, { desc = 'Paste after linewise' })
   end
 end
 

@@ -200,6 +200,114 @@ describe('default', function()
           ]])
         end)
       end)
+
+      describe('[p (put linewise before)', function()
+        it('puts linewise before the cursor', function()
+          n.clear({ args_rm = { '--cmd' } })
+          n.insert([[first line]])
+          n.feed('^yiw[p')
+          n.expect([[
+          first
+          first line]])
+        end)
+
+        it('works with blockwise yank', function()
+          n.clear({ args_rm = { '--cmd' } })
+          n.insert([[
+          first word, first line
+          first word, second line]])
+          n.feed('^<C-v>eky[p')
+          n.expect([[
+          first
+          first
+          first word, first line
+          first word, second line]])
+        end)
+
+        it('works with a count', function()
+          n.clear({ args_rm = { '--cmd' } })
+          n.insert([[first line]])
+          n.feed('^yiw3[p')
+          n.expect([[
+          first
+          first
+          first
+          first line]])
+        end)
+
+        it('respects current indent level', function()
+          n.clear({ args_rm = { '--cmd' } })
+          n.insert([[    first line]])
+          n.feed('^yiw[p')
+          n.expect([[
+              first
+              first line]])
+        end)
+
+        it('respects current indent level with a count', function()
+          n.clear({ args_rm = { '--cmd' } })
+          n.insert([[    first line]])
+          n.feed('^yiw2[p')
+          n.expect([[
+              first
+              first
+              first line]])
+        end)
+      end)
+
+      describe(']p (put linewise after)', function()
+        it('puts linewise after the cursor', function()
+          n.clear({ args_rm = { '--cmd' } })
+          n.insert([[opening line]])
+          n.feed('^yiw]p')
+          n.expect([[
+          opening line
+          opening]])
+        end)
+
+        it('works with blockwise yank', function()
+          n.clear({ args_rm = { '--cmd' } })
+          n.insert([[
+          first word, first line
+          first word, second line]])
+          n.feed('^<C-v>eky]p')
+          n.expect([[
+          first word, first line
+          first
+          first
+          first word, second line]])
+        end)
+
+        it('works with a count', function()
+          n.clear({ args_rm = { '--cmd' } })
+          n.insert([[opening line]])
+          n.feed('^yiw2]p')
+          n.expect([[
+          opening line
+          opening
+          opening]])
+        end)
+
+        it('respects current indent level', function()
+          n.clear({ args_rm = { '--cmd' } })
+          n.insert([[    first line]])
+          n.feed('^yiw]p')
+          n.expect([[
+              first line
+              first]])
+        end)
+
+        it('respects current indent level with a count', function()
+          n.clear({ args_rm = { '--cmd' } })
+          n.insert([[    first line]])
+          n.feed('^yiw3]p')
+          n.expect([[
+              first line
+              first
+              first
+              first]])
+        end)
+      end)
     end)
   end)
 end)
